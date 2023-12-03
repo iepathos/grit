@@ -4,7 +4,7 @@ Copyright © 2023 Glen Baker <iepathos@gmail.com>
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	conf "grit/config"
 	git "grit/git"
@@ -36,7 +36,7 @@ to quickly create a Cobra application.`,
 		}
 
 		wg.Wait()
-		fmt.Println("pulls complete")
+		log.Println("pull complete")
 	},
 }
 
