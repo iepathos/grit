@@ -1,4 +1,4 @@
-module medusa
+module grit 
 
 go 1.21.2
 

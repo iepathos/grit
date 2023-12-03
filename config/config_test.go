@@ -1,4 +1,4 @@
-package medusa
+package grit
 
 import (
 	"testing"
