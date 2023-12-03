@@ -7,7 +7,7 @@ import (
 func Test_ParseYml(t *testing.T) {
 	res := ParseYml("example_config.yml")
 	expected := []string{
-		"~/devl/medusa",
+		"~/devl/grit",
 		"~/devl/dryenv",
 		"~/devl/aistr",
 	}

@@ -6,6 +6,9 @@ package cmd
 import (
 	"fmt"
 
+	conf "grit/config"
+	git "grit/git"
+
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +29,12 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(pullCmd)
+	config_path := conf.GetDefaultYml()
+	paths := conf.ParseYml(config_path)
 
+	for _, p := range paths {
+		git.PullRepository(p)
+	}
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
