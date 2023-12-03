@@ -18,7 +18,7 @@ func Expand(s string) string {
 func CloneRepository(repoPath string, remotePath string) {
 	log.Printf("Cloning repository %s to %s", remotePath, repoPath)
 
-	_, err := git.PlainClone(repoPath, false, &git.CloneOptions{
+	_, err := git.PlainClone(Expand(repoPath), false, &git.CloneOptions{
 		URL:      remotePath,
 		Progress: os.Stdout,
 	})
