@@ -25,17 +25,6 @@ func CloneRepository(repoPath string, remotePath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// get parent directory of local repo path for calling
-	// parentDir := path.Dir(Expand(repoPath))
-
-	// cmd := exec.Command("git", "clone", remotePath)
-	// cmd.Dir = parentDir
-	// out, err := cmd.Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// log.Printf("%s", out)
 }
 
 func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) {
