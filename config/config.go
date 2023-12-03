@@ -51,6 +51,6 @@ func ParseYml(ymlpath string) map[string]string {
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
-	log.Printf("--- t:\n%v\n\n", conf)
+	// log.Printf("--- conf:\n%v\n\n", conf)
 	return conf.Repositories
 }
