@@ -1,5 +1,5 @@
 repositories:
-  - ~/devl/grit
-  - ~/devl/dryenv
-  - ~/devl/aistr
-  - /path/that/does/not/exist
+  ~/devl/grit: git@github.com:iepathos/grit.git
+  ~/devl/dryenv: git@github.com:iepathos/dryenv.git
+  ~/devl/aistr: git@github.com:iepathos/aistr.git
+  /path/that/does/not/exist: git@github.com:iepathos/someinvalidrepo

@@ -31,8 +31,8 @@ to quickly create a Cobra application.`,
 		var wg sync.WaitGroup
 		wg.Add(len(paths))
 
-		for _, p := range paths {
-			go git.PullRepository(p, &wg)
+		for localPath, remotePath := range paths {
+			go git.PullRepository(localPath, remotePath, &wg)
 		}
 
 		wg.Wait()

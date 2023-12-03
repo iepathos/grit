@@ -6,18 +6,15 @@ import (
 
 func Test_ParseYml(t *testing.T) {
 	res := ParseYml("example_config.yml")
-	expected := []string{
-		"~/devl/grit",
-		"~/devl/dryenv",
-		"~/devl/aistr",
+	expected := map[string]string{
+		"~/devl/grit":               "git@github.com:iepathos/grit.git",
+		"~/devl/dryenv":             "git@github.com:iepathos/dryenv.git",
+		"~/devl/aistr":              "git@github.com:iepathos/aistr.git",
+		"/path/that/does/not/exist": "git@github.com:iepathos/someinvalidrepo",
 	}
-	if res[0] != expected[0] {
-		t.Fatalf("res %s did not mtch expected %s", res, expected)
-	}
-	if res[1] != expected[1] {
-		t.Fatalf("res %s did not mtch expected %s", res, expected)
-	}
-	if res[2] != expected[2] {
-		t.Fatalf("res %s did not mtch expected %s", res, expected)
+	for localPath, remotePath := range res {
+		if expected[localPath] != remotePath {
+			t.Fatalf("localPath %s %s remotePath did not match expected %s", localPath, remotePath, expected[localPath])
+		}
 	}
 }

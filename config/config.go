@@ -1,18 +1,16 @@
 package grit
 
 import (
-	// "fmt"
 	"log"
 
-	"gopkg.in/yaml.v3"
-	// "bufio"
-	// "io"
 	"errors"
 	"os"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Repositories []string
+	Repositories map[string]string
 }
 
 func FileExists(filePath string) (bool, error) {
@@ -41,7 +39,7 @@ func GetDefaultYml() string {
 	}
 }
 
-func ParseYml(ymlpath string) []string {
+func ParseYml(ymlpath string) map[string]string {
 	conf := Config{}
 
 	data, err := os.ReadFile(ymlpath)
