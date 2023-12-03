@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
 func Expand(s string) string {
@@ -12,7 +13,9 @@ func Expand(s string) string {
 	return strings.Replace(s, "~", home, 1)
 }
 
-func PullRepository(repoPath string) {
+func PullRepository(repoPath string, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	log.Printf("Executing git pull in %s", repoPath)
 	cmd := exec.Command("git", "pull")
 	cmd.Dir = Expand(repoPath)

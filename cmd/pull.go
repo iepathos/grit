@@ -9,6 +9,8 @@ import (
 	conf "grit/config"
 	git "grit/git"
 
+	"sync"
+
 	"github.com/spf13/cobra"
 )
 
@@ -23,18 +25,24 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("pull called")
+		config_path := conf.GetDefaultYml()
+		paths := conf.ParseYml(config_path)
+
+		var wg sync.WaitGroup
+		wg.Add(len(paths))
+
+		for _, p := range paths {
+			go git.PullRepository(p, &wg)
+		}
+
+		wg.Wait()
+		fmt.Println("pulls complete")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(pullCmd)
-	config_path := conf.GetDefaultYml()
-	paths := conf.ParseYml(config_path)
 
-	for _, p := range paths {
-		git.PullRepository(p)
-	}
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

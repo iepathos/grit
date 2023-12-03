@@ -21,7 +21,9 @@ THE SOFTWARE.
 */
 package main
 
-import "grit/cmd"
+import (
+	cmd "grit/cmd"
+)
 
 func main() {
 	cmd.Execute()
