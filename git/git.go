@@ -64,11 +64,4 @@ func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) {
 
 	log.Println(commit)
 
-	// cmd := exec.Command("git", "pull")
-	// cmd.Dir = expandedPath
-	// out, err := cmd.Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// log.Printf("%s", out)
 }
