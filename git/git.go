@@ -3,7 +3,6 @@ package grit
 import (
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 	"sync"
 
@@ -36,11 +35,40 @@ func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) {
 	}
 
 	log.Printf("Pulling repository %s", repoPath)
-	cmd := exec.Command("git", "pull")
-	cmd.Dir = expandedPath
-	out, err := cmd.Output()
+	// We instantiate a new repository targeting the given path (the .git folder)
+	r, err := git.PlainOpen(repoPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("%s", out)
+
+	// Get the working directory for the repository
+	w, err := r.Worktree()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print the latest commit that was just pulled
+	ref, err := r.Head()
+	if err != nil {
+		log.Fatal(err)
+	}
+	commit, err := r.CommitObject(ref.Hash())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(commit)
+
+	// cmd := exec.Command("git", "pull")
+	// cmd.Dir = expandedPath
+	// out, err := cmd.Output()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// log.Printf("%s", out)
 }
