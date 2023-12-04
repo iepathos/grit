@@ -17,3 +17,18 @@ ssh-add
 
 if their default ssh key ~/.ssh/id_rsa hasn't been added to their ssh-agent as this is what go-git relies on.
 
+
+
+
+Roadmap
+-----
+
+have different repos output pulls to different lines in terminal so it's easier to track which one is at what state of pull or clone
+
+add ability to pass in config to grit
+
+add ability to pass in remote config to grit
+
+see if we can fix needing to run ssh-add may be better solution that that
+
+
