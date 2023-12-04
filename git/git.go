@@ -14,7 +14,25 @@ func Expand(s string) string {
 	return strings.Replace(s, "~", home, 1)
 }
 
-func CloneRepository(repoPath string, remotePath string) {
+func GetCurrentBranch(repoPath string) (string, error) {
+	r, err := git.PlainOpen(repoPath)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	h, err := r.Head()
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	return h.Name().Short(), nil
+}
+
+func CheckoutBranch(repoPath string, branchName string) error {
+	return nil
+}
+
+func CloneRepository(repoPath string, remotePath string) error {
 	log.Printf("Cloning repository %s to %s", remotePath, repoPath)
 
 	_, err := git.PlainClone(Expand(repoPath), false, &git.CloneOptions{
@@ -23,15 +41,21 @@ func CloneRepository(repoPath string, remotePath string) {
 	})
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
-func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) {
+func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	expandedPath := Expand(repoPath)
 	if _, err := os.Stat(expandedPath); os.IsNotExist(err) {
-		CloneRepository(repoPath, remotePath)
-		return
+		err = CloneRepository(repoPath, remotePath)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+		return nil
 	}
 
 	log.Printf("Pulling repository %s", repoPath)
@@ -39,29 +63,34 @@ func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) {
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	// Get the working directory for the repository
 	w, err := r.Worktree()
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
-	// Print the latest commit that was just pulled
 	ref, err := r.Head()
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
+
 	commit, err := r.CommitObject(ref.Hash())
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	log.Println(commit)
-
+	return nil
 }
