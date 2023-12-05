@@ -35,22 +35,24 @@ func GetDefaultYml() string {
 	if exists {
 		return relative_grit
 	} else {
-		return "~/.grit.yml"
+		return "~/.grit.yaml"
 	}
 }
 
-func ParseYml(ymlpath string) map[string]string {
+func ParseYml(ymlpath string) (map[string]string, error) {
 	conf := Config{}
 
 	data, err := os.ReadFile(ymlpath)
 	if err != nil {
 		log.Fatalf("error: %v", err)
+		return nil, err
 	}
 
 	err = yaml.Unmarshal([]byte(data), &conf)
 	if err != nil {
 		log.Fatalf("error: %v", err)
+		return nil, err
 	}
 	// log.Printf("--- conf:\n%v\n\n", conf)
-	return conf.Repositories
+	return conf.Repositories, nil
 }

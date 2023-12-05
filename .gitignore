@@ -1,4 +1,5 @@
 grit
 grit.yml
-
+.grit.yaml
+.grit.yml
 dist/

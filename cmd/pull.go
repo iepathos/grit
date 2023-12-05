@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // pullCmd represents the pull command
@@ -22,8 +23,12 @@ var pullCmd = &cobra.Command{
 	If the repository isn't found in the config path locally it will clone the repository
 	from the remote path in the config.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		config_path := conf.GetDefaultYml()
-		paths := conf.ParseYml(config_path)
+		// viper.SetConfigFile(
+		config_path := viper.ConfigFileUsed()
+		paths, err := conf.ParseYml(config_path)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
 
 		var wg sync.WaitGroup
 		wg.Add(len(paths))

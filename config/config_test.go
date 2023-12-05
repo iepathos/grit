@@ -5,7 +5,7 @@ import (
 )
 
 func Test_ParseYml(t *testing.T) {
-	res := ParseYml("example_config.yml")
+	res, _ := ParseYml("example_config.yml")
 	expected := map[string]string{
 		"~/devl/grit":               "git@github.com:iepathos/grit.git",
 		"~/devl/dryenv":             "git@github.com:iepathos/dryenv.git",

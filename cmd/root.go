@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -79,6 +80,11 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
+		currentDir, err := os.Getwd()
+		if err != nil {
+			log.Println(err)
+		}
+		viper.AddConfigPath(currentDir)
 		// Search config in home directory with name ".grit" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
