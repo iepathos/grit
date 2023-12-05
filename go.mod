@@ -1,6 +1,6 @@
 module grit
 
-go 1.21
+go 1.20
 
 require (
 	github.com/go-git/go-git/v5 v5.10.1
