@@ -17,13 +17,10 @@ import (
 // pullCmd represents the pull command
 var pullCmd = &cobra.Command{
 	Use:   "pull",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Git pull in every repository in the specified config.  Clone if repository isn't found locally.",
+	Long: `Grit will execute git pull in all of the repositories specified in the grit config.
+	If the repository isn't found in the config path locally it will clone the repository
+	from the remote path in the config.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		config_path := conf.GetDefaultYml()
 		paths := conf.ParseYml(config_path)
