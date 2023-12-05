@@ -24,21 +24,6 @@ func FileExists(filePath string) (bool, error) {
 	return false, err
 }
 
-func GetDefaultYml() string {
-	// either grit.yml in local directory will be used
-	// or if it doesn't exist ~/.grit.yml will be used
-	relative_grit := "grit.yml"
-	exists, err := FileExists(relative_grit)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	if exists {
-		return relative_grit
-	} else {
-		return "~/.grit.yaml"
-	}
-}
-
 func ParseYml(ymlpath string) (map[string]string, error) {
 	conf := Config{}
 
