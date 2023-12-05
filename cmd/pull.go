@@ -30,12 +30,21 @@ to quickly create a Cobra application.`,
 
 		var wg sync.WaitGroup
 		wg.Add(len(paths))
+		errCh := make(chan error, 10)
 
 		for localPath, remotePath := range paths {
-			go git.PullRepository(localPath, remotePath, &wg)
+			go git.PullRepository(localPath, remotePath, &wg, errCh)
 		}
 
-		wg.Wait()
+		go func() {
+			wg.Wait()
+			close(errCh)
+		}()
+
+		for err := range errCh {
+			log.Fatalf("%v", err)
+		}
+
 		log.Println("pull complete")
 	},
 }

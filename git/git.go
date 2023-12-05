@@ -46,16 +46,17 @@ func CloneRepository(repoPath string, remotePath string) error {
 	return nil
 }
 
-func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) error {
+func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errCh chan error) {
 	defer wg.Done()
 	expandedPath := Expand(repoPath)
 	if _, err := os.Stat(expandedPath); os.IsNotExist(err) {
 		err = CloneRepository(repoPath, remotePath)
 		if err != nil {
 			log.Fatal(err)
-			return err
+			errCh <- err
+			return
 		}
-		return nil
+		return
 	}
 
 	log.Printf("Pulling repository %s", repoPath)
@@ -63,34 +64,38 @@ func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup) erro
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
 		log.Fatal(err)
-		return err
+		errCh <- err
+		return
 	}
 
 	// Get the working directory for the repository
 	w, err := r.Worktree()
 	if err != nil {
 		log.Fatal(err)
-		return err
+		errCh <- err
+		return
 	}
 
 	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
 	if err != nil {
 		log.Fatal(err)
-		return err
+		errCh <- err
+		return
 	}
 
 	ref, err := r.Head()
 	if err != nil {
 		log.Fatal(err)
-		return err
+		errCh <- err
+		return
 	}
 
 	commit, err := r.CommitObject(ref.Hash())
 	if err != nil {
 		log.Fatal(err)
-		return err
+		errCh <- err
+		return
 	}
 
 	log.Println(commit)
-	return nil
 }
