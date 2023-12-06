@@ -26,6 +26,10 @@ func FileExists(filePath string) (bool, error) {
 
 func ParseYml(ymlpath string) (map[string]string, error) {
 	conf := Config{}
+	if _, err := os.Stat(ymlpath); errors.Is(err, os.ErrNotExist) {
+		log.Fatalf("Grit config not found %s", ymlpath)
+		return nil, err
+	}
 
 	data, err := os.ReadFile(ymlpath)
 	if err != nil {
