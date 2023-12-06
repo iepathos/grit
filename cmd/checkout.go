@@ -37,9 +37,9 @@ var Branch string
 
 // checkoutCmd represents the checkout command
 var checkoutCmd = &cobra.Command{
-	Use:   "checkout <branch or tag>",
+	Use:   "checkout <branch>",
 	Short: "Git checkout the specified branch in every repository.",
-	Long: `Execute git checkout <branch or tag> in every repository
+	Long: `Execute git checkout <branch> in every repository
 	in the given grit yaml.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
