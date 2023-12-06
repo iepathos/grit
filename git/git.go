@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 )
 
 func Expand(s string) string {
@@ -28,8 +29,39 @@ func GetCurrentBranch(repoPath string) (string, error) {
 	return h.Name().Short(), nil
 }
 
-func CheckoutBranch(repoPath string, branchName string) error {
-	return nil
+func CheckoutBranch(repoPath string, branchName string, wg *sync.WaitGroup, errCh chan error) {
+	defer wg.Done()
+	log.Printf("Checking out repository %s at %s", repoPath, branchName)
+	r, err := git.PlainOpen(repoPath)
+	if err != nil {
+		log.Fatal(err)
+		errCh <- err
+		return
+	}
+
+	w, err := r.Worktree()
+	if err != nil {
+		log.Fatal(err)
+		errCh <- err
+		return
+	}
+
+	// branchRef, err := r.Branch(branchName)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	errCh <- err
+	// 	return
+	// }
+	branchref := "refs/heads/" + branchName
+	err = w.Checkout(&git.CheckoutOptions{
+		Branch: plumbing.ReferenceName(branchref),
+	})
+	if err != nil {
+		log.Println("failed checkout")
+		log.Fatal(err)
+		errCh <- err
+		return
+	}
 }
 
 func CloneRepository(repoPath string, remotePath string) error {
