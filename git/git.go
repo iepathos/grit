@@ -66,8 +66,9 @@ func CloneRepository(repoPath string, remotePath string) error {
 	log.Printf("Cloning repository %s to %s", remotePath, repoPath)
 
 	_, err := git.PlainClone(Expand(repoPath), false, &git.CloneOptions{
-		URL:      remotePath,
-		Progress: os.Stdout,
+		URL:               remotePath,
+		Progress:          os.Stdout,
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	})
 	if err != nil {
 		log.Fatal(err)
