@@ -92,7 +92,7 @@ func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errC
 	}
 
 	// log.Printf("Pulling repository %s", repoPath)
-	spinner.Info("Pulling")
+	// spinner.Info("Pulling")
 	// We instantiate a new repository targeting the given path (the .git folder)
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
