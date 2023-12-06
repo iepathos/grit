@@ -11,6 +11,8 @@ import (
 
 	"sync"
 
+	"github.com/pterm/pterm"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -34,13 +36,19 @@ var pullCmd = &cobra.Command{
 		wg.Add(len(paths))
 		errCh := make(chan error, 10)
 
+		multi := pterm.DefaultMultiPrinter
+
 		for localPath, remotePath := range paths {
-			go git.PullRepository(localPath, remotePath, &wg, errCh)
+			spinner, _ := pterm.DefaultSpinner.WithWriter(multi.NewWriter()).Start("Pulling " + localPath)
+			go git.PullRepository(localPath, remotePath, &wg, errCh, spinner)
 		}
+
+		multi.Start()
 
 		go func() {
 			wg.Wait()
 			close(errCh)
+			multi.Stop()
 		}()
 
 		for err := range errCh {

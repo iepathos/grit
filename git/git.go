@@ -6,6 +6,10 @@ import (
 	"strings"
 	"sync"
 
+	"path/filepath"
+
+	"github.com/pterm/pterm"
+
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 )
@@ -72,24 +76,27 @@ func CloneRepository(repoPath string, remotePath string) error {
 	return nil
 }
 
-func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errCh chan error) {
+func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errCh chan error, spinner *pterm.SpinnerPrinter) {
 	defer wg.Done()
+	repoName := filepath.Base(repoPath)
+
 	expandedPath := Expand(repoPath)
 	if _, err := os.Stat(expandedPath); os.IsNotExist(err) {
 		err = CloneRepository(repoPath, remotePath)
 		if err != nil {
-			log.Fatal(err)
+			spinner.Fail("%s %s", repoName, err)
 			errCh <- err
 			return
 		}
 		return
 	}
 
-	log.Printf("Pulling repository %s", repoPath)
+	// log.Printf("Pulling repository %s", repoPath)
+	spinner.Info("Pulling")
 	// We instantiate a new repository targeting the given path (the .git folder)
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
-		log.Fatal(err)
+		spinner.Fail("%s %s", repoName, err)
 		errCh <- err
 		return
 	}
@@ -97,31 +104,32 @@ func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errC
 	// Get the working directory for the repository
 	w, err := r.Worktree()
 	if err != nil {
-		log.Fatal(err)
+		spinner.Fail("%s %s", repoName, err)
 		errCh <- err
 		return
 	}
 
 	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
 	if err != nil {
-		log.Fatal(err)
+		spinner.Fail("%s %s", repoName, err)
 		errCh <- err
 		return
 	}
 
-	ref, err := r.Head()
-	if err != nil {
-		log.Fatal(err)
-		errCh <- err
-		return
-	}
+	// ref, err := r.Head()
+	// if err != nil {
+	// 	// log.Fatal(err)
+	// 	errCh <- err
+	// 	return
+	// }
 
-	commit, err := r.CommitObject(ref.Hash())
-	if err != nil {
-		log.Fatal(err)
-		errCh <- err
-		return
-	}
+	// commit, err := r.CommitObject(ref.Hash())
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	errCh <- err
+	// 	return
+	// }
 
-	log.Println(commit)
+	// log.Println(commit)
+	spinner.Success(repoName + " complete")
 }
