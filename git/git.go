@@ -46,12 +46,6 @@ func CheckoutBranch(repoPath string, branchName string, wg *sync.WaitGroup, errC
 		return
 	}
 
-	// branchRef, err := r.Branch(branchName)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	errCh <- err
-	// 	return
-	// }
 	branchref := "refs/heads/" + branchName
 	err = w.Checkout(&git.CheckoutOptions{
 		Branch: plumbing.ReferenceName(branchref),
