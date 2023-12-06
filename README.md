@@ -29,6 +29,6 @@ Roadmap
 
 - add ability to pass in remote config to grit
 
-- see if we can fix needing to run ssh-add may be better solution that that
+- see if we can fix needing to run ssh-add may be better solution that 
 
 
