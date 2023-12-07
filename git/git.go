@@ -1,6 +1,7 @@
 package grit
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -66,8 +67,8 @@ func CloneRepository(repoPath string, remotePath string) error {
 	log.Printf("Cloning repository %s to %s", remotePath, repoPath)
 
 	_, err := git.PlainClone(Expand(repoPath), false, &git.CloneOptions{
-		URL:               remotePath,
-		Progress:          os.Stdout,
+		URL: remotePath,
+		// Progress:          os.Stdout,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	})
 	if err != nil {
@@ -77,60 +78,44 @@ func CloneRepository(repoPath string, remotePath string) error {
 	return nil
 }
 
-func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errCh chan error, spinner *pterm.SpinnerPrinter) {
+func PullRepository(repoPath string, remotePath string, wg *sync.WaitGroup, errCh chan error, log *pterm.Logger) {
 	defer wg.Done()
 	repoName := filepath.Base(repoPath)
-
+	log.Info("Pulling " + repoName)
 	expandedPath := Expand(repoPath)
 	if _, err := os.Stat(expandedPath); os.IsNotExist(err) {
 		err = CloneRepository(repoPath, remotePath)
 		if err != nil {
-			spinner.Fail("%s %s", repoName, err)
+			log.Error(fmt.Sprintf("%s %s", repoName, err))
 			errCh <- err
 			return
 		}
 		return
 	}
 
-	// log.Printf("Pulling repository %s", repoPath)
-	// spinner.Info("Pulling")
-	// We instantiate a new repository targeting the given path (the .git folder)
 	r, err := git.PlainOpen(repoPath)
 	if err != nil {
-		spinner.Fail("%s %s", repoName, err)
+		log.Error(fmt.Sprintf("%s %s", repoName, err))
 		errCh <- err
 		return
 	}
 
-	// Get the working directory for the repository
 	w, err := r.Worktree()
 	if err != nil {
-		spinner.Fail("%s %s", repoName, err)
+		log.Error(fmt.Sprintf("%s %s", repoName, err))
 		errCh <- err
 		return
 	}
 
-	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+	err = w.Pull(&git.PullOptions{
+		RemoteName: "origin",
+		// Progress:   os.Stdout,
+	})
 	if err != nil {
-		spinner.Fail("%s %s", repoName, err)
+		log.Error(fmt.Sprintf("%s %s", repoName, err))
 		errCh <- err
 		return
 	}
 
-	// ref, err := r.Head()
-	// if err != nil {
-	// 	// log.Fatal(err)
-	// 	errCh <- err
-	// 	return
-	// }
-
-	// commit, err := r.CommitObject(ref.Hash())
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	errCh <- err
-	// 	return
-	// }
-
-	// log.Println(commit)
-	spinner.Success(repoName + " complete")
+	log.Info(fmt.Sprintf("%s %s", repoName, err))
 }

@@ -4,7 +4,9 @@ Copyright © 2023 Glen Baker <iepathos@gmail.com>
 package cmd
 
 import (
-	"log"
+	// "log"
+
+	"fmt"
 
 	conf "grit/config"
 	git "grit/git"
@@ -25,37 +27,34 @@ var pullCmd = &cobra.Command{
 	If the repository isn't found in the config path locally it will clone the repository
 	from the remote path in the config.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// viper.SetConfigFile(
+
+		log := pterm.DefaultLogger.WithLevel(pterm.LogLevelTrace).WithCaller()
+
 		config_path := viper.ConfigFileUsed()
 		paths, err := conf.ParseYml(config_path)
 		if err != nil {
-			log.Fatalf("%v", err)
+			log.Fatal(fmt.Sprintf("%v", err))
 		}
 
 		var wg sync.WaitGroup
 		wg.Add(len(paths))
 		errCh := make(chan error, 10)
 
-		multi := pterm.DefaultMultiPrinter
-
 		for localPath, remotePath := range paths {
-			spinner, _ := pterm.DefaultSpinner.WithWriter(multi.NewWriter()).Start("Pulling " + localPath)
-			go git.PullRepository(localPath, remotePath, &wg, errCh, spinner)
+			logger := pterm.DefaultLogger.WithLevel(pterm.LogLevelTrace).WithCaller()
+			go git.PullRepository(localPath, remotePath, &wg, errCh, logger)
 		}
-
-		multi.Start()
 
 		go func() {
 			wg.Wait()
 			close(errCh)
-			multi.Stop()
 		}()
 
-		for err := range errCh {
-			log.Fatalf("%v", err)
-		}
+		// for err := range errCh {
+		// 	log.Fatal(fmt.Sprintf("%v", err))
+		// }
 
-		log.Println("pull complete")
+		log.Info("pull complete")
 	},
 }
 
