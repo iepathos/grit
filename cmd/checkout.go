@@ -55,7 +55,7 @@ var checkoutCmd = &cobra.Command{
 		wg.Add(len(paths))
 		errCh := make(chan error, 10)
 
-		for localPath, _ := range paths {
+		for localPath := range paths {
 			go git.CheckoutBranch(localPath, Branch, &wg, errCh)
 		}
 
